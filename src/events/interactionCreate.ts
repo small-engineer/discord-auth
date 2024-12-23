@@ -6,7 +6,7 @@ export default async function interactionCreate(interaction: Interaction) {
   if (interaction.customId !== "auth_button") return;
 
   const roleId = "1320603299174678629"; // 認証ロール
-  const warningRoleId = "9999999999999999999"; // warningロール
+  const warningRoleId = "1320655664732700713"; // warningロール
 
   try {
     const member = interaction.member as GuildMember;
@@ -18,7 +18,6 @@ export default async function interactionCreate(interaction: Interaction) {
       return;
     }
 
-    // [追加] warningロールを持っているかチェック
     if (member.roles.cache.has(warningRoleId)) {
       await interaction.reply({
         content:
