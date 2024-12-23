@@ -1,16 +1,11 @@
-//src/index.ts
-
 import "dotenv/config";
 import { Client, GatewayIntentBits } from "discord.js";
-
 import ready from "./events/ready";
 import interactionCreate from "./events/interactionCreate";
-
-// [追加]
 import messageCreate from "./events/messageCreate";
+import { setupLogging } from "./utils/log";
 
 const client = new Client({
-  // メッセージ内容やメンバー情報を扱うための Intent を追加
   intents: [
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMembers,
@@ -18,6 +13,9 @@ const client = new Client({
     GatewayIntentBits.MessageContent,
   ],
 });
+
+// ログ機能をセットアップ
+setupLogging(client);
 
 // イベントを登録
 client.once("ready", () => ready(client));
