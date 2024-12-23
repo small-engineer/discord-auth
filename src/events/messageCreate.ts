@@ -1,4 +1,4 @@
-import { Message, GuildMember, TextBasedChannel } from "discord.js";
+import { Message, GuildMember } from "discord.js";
 
 // ユーザーごとのメンション数管理用
 const mentionCountMap = new Map<
@@ -11,9 +11,9 @@ const everyoneMentionCountMap = new Map<
 >();
 
 // しきい値・リセット秒数
-const MENTION_THRESHOLD = 10;
-const EVERYONE_THRESHOLD = 5;
-const MENTION_RESET_INTERVAL = 20;
+const MENTION_THRESHOLD = 20; // 個人メンション: 20秒で20回
+const EVERYONE_THRESHOLD = 5; // @everyone/@here: 20秒で5回
+const MENTION_RESET_INTERVAL = 20; // 20秒でカウントリセット
 
 // ロールID
 const AUTH_ROLE_ID = "1320603299174678629"; // 認証ロール
@@ -55,7 +55,10 @@ export default async function messageCreate(message: Message) {
 
   // メンション数のカウント
   const individualMentions = message.mentions.users.size; // 個人メンション数
-  const everyoneMentions = message.mentions.everyone ? 1 : 0; // @everyone/@here が含まれるか
+  const everyoneMentions =
+    message.mentions.everyone || /@everyone|@here/.test(message.content)
+      ? 1
+      : 0; // @everyone/@here を検知
 
   // カウント更新
   if (userMentionData) {
