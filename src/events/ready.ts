@@ -1,3 +1,5 @@
+//src/events/ready.ts
+
 import {
   Client,
   ActionRowBuilder,

@@ -1,16 +1,28 @@
+//src/events/interactionCreate.ts
 import { Interaction, GuildMember } from "discord.js";
 
 export default async function interactionCreate(interaction: Interaction) {
   if (!interaction.isButton()) return;
   if (interaction.customId !== "auth_button") return;
 
-  const roleId = "1320603299174678629";
+  const roleId = "1320603299174678629"; // 認証ロール
+  const warningRoleId = "9999999999999999999"; // warningロール
 
   try {
     const member = interaction.member as GuildMember;
     if (!member) {
       await interaction.reply({
         content: ">>> [ERROR] メンバー情報を取得できませんでした。",
+        ephemeral: true,
+      });
+      return;
+    }
+
+    // [追加] warningロールを持っているかチェック
+    if (member.roles.cache.has(warningRoleId)) {
+      await interaction.reply({
+        content:
+          ">>> [ERROR] あなたは警告ロールを所持しているため認証できません。",
         ephemeral: true,
       });
       return;
