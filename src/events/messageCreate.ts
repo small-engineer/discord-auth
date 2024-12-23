@@ -73,12 +73,7 @@ export default async function messageCreate(client: Client, message: Message) {
 
   // 警告処理 (@everyone/@here)
   if (everyoneMentionData && everyoneMentionData.count > EVERYONE_THRESHOLD) {
-    await applyWarning(
-      client,
-      message,
-      member,
-      "@everyone または @here の過剰使用"
-    );
+    await applyWarning(client, message, member, "全体メンションの過剰使用");
   }
 }
 

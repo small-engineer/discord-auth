@@ -1,38 +1,64 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = interactionCreate;
-async function interactionCreate(interaction) {
+const log_1 = require("../utils/log");
+async function interactionCreate(client, interaction) {
     if (!interaction.isButton())
         return;
     if (interaction.customId !== "auth_button")
         return;
-    const roleId = "1320603299174678629";
+    const roleId = "1320603299174678629"; // 認証ロール
+    const warningRoleId = "1320655664732700713"; // warningロール
     try {
-        const member = interaction.member;
+        // メンバー情報を最新化
+        const member = (await interaction.guild?.members.fetch(interaction.user.id));
         if (!member) {
+            const errorMessage = `[ERROR] メンバー情報を取得できませんでした。`;
+            console.error(errorMessage);
+            (0, log_1.logToChannel)(client, errorMessage);
             await interaction.reply({
-                content: ">>> [ERROR] メンバー情報を取得できませんでした。",
+                content: ">>> " + errorMessage,
                 ephemeral: true,
             });
             return;
         }
-        // 既にロールを持っているかチェック
-        if (member.roles.cache.has(roleId)) {
+        // 警告ロールを持っている場合のチェック
+        await member.fetch();
+        if (member.roles.cache.has(warningRoleId)) {
+            const errorMessage = `[ERROR] ${member.user.tag} は警告ロールを所持しているため認証できません。`;
+            console.error(errorMessage);
+            (0, log_1.logToChannel)(client, errorMessage);
             await interaction.reply({
-                content: ">>> [ERROR] 既に認証済みのユーザーです。",
+                content: ">>> " + errorMessage,
+                ephemeral: true,
+            });
+            return;
+        }
+        // 既に認証済みかどうかをチェック
+        if (member.roles.cache.has(roleId)) {
+            const errorMessage = `[INFO] ${member.user.tag} は既に認証済みのユーザーです。`;
+            console.log(errorMessage);
+            (0, log_1.logToChannel)(client, errorMessage);
+            await interaction.reply({
+                content: ">>> " + errorMessage,
                 ephemeral: true,
             });
             return;
         }
         // ロールを付与
         await member.roles.add(roleId);
+        const successMessage = `[SUCCESS] ${member.user.tag} に認証ロールを付与しました。`;
+        console.log(successMessage);
+        (0, log_1.logToChannel)(client, successMessage);
         await interaction.reply({
-            content: ">>> [SUCCESS] 認証が完了しました！ようこそ！",
+            content: ">>> " + successMessage,
             ephemeral: true,
         });
     }
     catch (error) {
-        console.error(`[ERROR] ロール付与中にエラーが発生しました: ${error}`);
+        const errorMessage = `[ERROR] ${interaction.user.tag} のロール付与中にエラーが発生しました: ${error}`;
+        console.error(errorMessage);
+        (0, log_1.logToChannel)(client, errorMessage);
         await interaction.reply({
             content: ">>> [ERROR] ロール付与に失敗しました。管理者にお問い合わせください。",
             ephemeral: true,

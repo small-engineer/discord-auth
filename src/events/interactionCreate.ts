@@ -28,6 +28,7 @@ export default async function interactionCreate(
     }
 
     // 警告ロールを持っている場合のチェック
+    await member.fetch();
     if (member.roles.cache.has(warningRoleId)) {
       const errorMessage = `[ERROR] ${member.user.tag} は警告ロールを所持しているため認証できません。`;
       console.error(errorMessage);
