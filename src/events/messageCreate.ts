@@ -1,4 +1,5 @@
-import { Message, GuildMember } from "discord.js";
+import { Message, GuildMember, Client } from "discord.js";
+import { logToChannel } from "../utils/log"; // ログ送信関数を利用
 
 // ユーザーごとのメンション数管理用
 const mentionCountMap = new Map<
@@ -19,7 +20,7 @@ const MENTION_RESET_INTERVAL = 20; // 20秒でカウントリセット
 const AUTH_ROLE_ID = "1320603299174678629"; // 認証ロール
 const WARNING_ROLE_ID = "1320655664732700713"; // warningロール
 
-export default async function messageCreate(message: Message) {
+export default async function messageCreate(client: Client, message: Message) {
   if (!message.guild || message.author.bot) return;
 
   const member = message.member as GuildMember;
@@ -67,17 +68,23 @@ export default async function messageCreate(message: Message) {
 
   // 警告処理 (個人メンション)
   if (userMentionData && userMentionData.count > MENTION_THRESHOLD) {
-    await applyWarning(message, member, "過剰な個人メンション");
+    await applyWarning(client, message, member, "過剰な個人メンション");
   }
 
   // 警告処理 (@everyone/@here)
   if (everyoneMentionData && everyoneMentionData.count > EVERYONE_THRESHOLD) {
-    await applyWarning(message, member, "@everyone または @here の過剰使用");
+    await applyWarning(
+      client,
+      message,
+      member,
+      "@everyone または @here の過剰使用"
+    );
   }
 }
 
 // 警告処理
 async function applyWarning(
+  client: Client,
   message: Message,
   member: GuildMember,
   reason: string
@@ -99,7 +106,14 @@ async function applyWarning(
         `<@${member.id}> さん、${reason} のため警告ロールを付与しました。`
       );
     }
+
+    // ログをチャンネルに送信
+    const logMessage = `[WARNING] ${member.user.tag} に警告ロールを付与: ${reason}`;
+    console.log(logMessage);
+    logToChannel(client, logMessage);
   } catch (error) {
-    console.error("[ERROR] ロール変更に失敗:", error);
+    const errorMessage = `[ERROR] ロール変更に失敗: ${error}`;
+    console.error(errorMessage);
+    logToChannel(client, errorMessage);
   }
 }
