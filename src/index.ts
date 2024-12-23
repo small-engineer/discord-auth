@@ -19,8 +19,10 @@ setupLogging(client);
 
 // イベントを登録
 client.once("ready", () => ready(client));
-client.on("interactionCreate", (interaction) => interactionCreate(interaction));
-client.on("messageCreate", (message) => messageCreate(message));
+client.on("interactionCreate", (interaction) =>
+  interactionCreate(client, interaction)
+);
+client.on("messageCreate", (message) => messageCreate(client, message));
 
 // Bot起動
 client.login(process.env.DISCORD_TOKEN).catch((error) => {
