@@ -55,10 +55,7 @@ export default async function messageCreate(message: Message) {
 
   // メンション数のカウント
   const individualMentions = message.mentions.users.size; // 個人メンション数
-  const everyoneMentions =
-    message.mentions.everyone || /@everyone|@here/.test(message.content)
-      ? 1
-      : 0; // @everyone/@here を検知
+  const everyoneMentions = message.mentions.everyone ? 1 : 0; // @everyone/@here が含まれるか
 
   // カウント更新
   if (userMentionData) {

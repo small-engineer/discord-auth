@@ -5,7 +5,7 @@ export default async function interactionCreate(interaction: Interaction) {
   if (interaction.customId !== "auth_button") return;
 
   const roleId = "1320603299174678629"; // 認証ロール
-  const warningRoleId = "1320600782101545000"; // warningロール
+  const warningRoleId = "1320655664732700713"; // warningロール
 
   try {
     // メンバー情報を最新化
