@@ -1,4 +1,3 @@
-//src/events/interactionCreate.ts
 import { Interaction, GuildMember } from "discord.js";
 
 export default async function interactionCreate(interaction: Interaction) {
@@ -9,7 +8,10 @@ export default async function interactionCreate(interaction: Interaction) {
   const warningRoleId = "1320655664732700713"; // warningロール
 
   try {
-    const member = interaction.member as GuildMember;
+    // メンバー情報を最新化
+    const member = (await interaction.guild?.members.fetch(
+      interaction.user.id
+    )) as GuildMember;
     if (!member) {
       await interaction.reply({
         content: ">>> [ERROR] メンバー情報を取得できませんでした。",
@@ -18,6 +20,7 @@ export default async function interactionCreate(interaction: Interaction) {
       return;
     }
 
+    // 警告ロールを持っている場合のチェック
     if (member.roles.cache.has(warningRoleId)) {
       await interaction.reply({
         content:
@@ -27,7 +30,7 @@ export default async function interactionCreate(interaction: Interaction) {
       return;
     }
 
-    // 既にロールを持っているかチェック
+    // 既に認証済みかどうかをチェック
     if (member.roles.cache.has(roleId)) {
       await interaction.reply({
         content: ">>> [ERROR] 既に認証済みのユーザーです。",
