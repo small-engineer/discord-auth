@@ -53,7 +53,10 @@ export default function handleGuildMemberAdd(client: Client) {
 
       // チャンネルにメッセージを送信
       await channel.send({
-        content: `ようこそ、<@${member.id}> さん！サーバーを利用する前に以下の規約をご確認ください！`,
+        content: `
+        ようこそ、<@${member.id}> さん！サーバーを利用する前に以下の規約をご確認ください！\n
+        規約を確認したら #introduction チャンネルでぜひ自己紹介をお願いします！\n
+        `,
         embeds: [embed],
         components: [row],
       });
